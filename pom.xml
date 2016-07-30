@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>example-multi-module</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <!-- Need mo specify ung modules nya na usually katabi ng pom na to-->
+  <modules>
+    <module>example-infra</module>
+    <module>example-app</module>
+    <module>example-core</module>
+  </modules>
+
+  <!-- pom ang packaging kpag walang src directory. ibig sbhn parent lang sya hindi sya actual module -->
+  <packaging>pom</packaging>
+
+  <!-- Dito usually ung global properties ng maven project mo.
+  usually dito ung versions, maybe source directory, database username at password, etc
+  mdmi ka pwede ilagay dito and hindi din nmn mandatory na dito mo ilagay lahat ng snbe ko
+  -->
+  <properties>
+    <!--Ikaw bahala magspecify ng key, katulad neto commons-lang.version, so ggmitin mo sya as ${commons-lang.version} -->
+    <commons-lang.version>3.4</commons-lang.version>
+    <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+
+    <java.version>1.8</java.version>
+  </properties>
+
+
+  <!--
+  Dito mo lalagay lahat ng dependencies ng app mo to make sure na same version sila
+  kpag nag include ka ng dependency sa sub module mo, dmo na need ng version
+  -->
+  <dependencyManagement>
+    <dependencies>
+      <!-- Make sure na nasa dependency management mo lahat ng actual modules ng app mo, not ung parent modules -->
+      <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>example-core-model</artifactId>
+        <!-- Gamitin mo ung ${project.version} properties pra sa mga project moduels mo
+                when speccifiying them sa dependency management, to make sure same sila ng version with the parent pom which is eto
+        -->
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>example-core-services</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>example-infra</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- lahat ng ilagay mo dito sa dependency tag sa parent, mai-inherit sya ng child dependencies
+    since eto ung top level, iinherit nya lahat
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <!-- Tulad ng sabi ko, kpag nsa dependency management mo na, dmo na need ispecify ung version-->
+    </dependency>
+  </dependencies>
+
+  <!-- Dito mo specify lahat ng build related config mo-->
+  <build>
+    <!-- Katulad ng dpendency maangement,  meron din plugins management-->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <!-- May option kang dito na sa plugin mangement i specify ung configuration ng plugin
+          pero maiinherit un ng lahat ng modules, or per module mo ispecify ung plugin-->
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+    </plugins>
+
+  </build>
+</project>
